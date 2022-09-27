@@ -1,0 +1,50 @@
+pipeline {
+    
+    tools {
+        jdk "myjava"
+        maven "mymaven"
+    }
+    // Agent section is mandatory
+    agent any
+    
+    stages {
+        stage('Clone the Repo')
+        {
+            steps {
+                git 'https://github.com/Sonal0409/DevOpscodeDemo.git'
+            }
+        }
+        stage ('Compile the Code')
+        {
+            steps {
+                sh 'mvn compile'    //shell script so given sh
+            }
+        }
+        stage ('Code Review')
+        {
+            steps {
+                sh 'mvn pmd:pmd'    //shell script so given sh
+            }
+        }
+        
+        stage ('Unit testing')
+        {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                success {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        
+        stage ('Package')
+        {
+            steps {
+                sh 'mvn package'
+            }
+        }
+        
+    }
+}
